@@ -1,0 +1,20 @@
+--- a/Makefile.am	2018-04-10 01:21:34.000000000 +0800
++++ b/Makefile.am	2018-04-29 08:37:34.482337689 +0800
+@@ -1621,7 +1621,7 @@
+ endef
+ 
+ protocol/%-protocol.c : $(WAYLAND_PROTOCOLS_DATADIR)/$$(call protostability,$$*)/$$(call protoname,$$*)/$$*.xml
+-	$(AM_V_GEN)$(MKDIR_P) $(dir $@) && $(wayland_scanner) code < $< > $@
++	$(AM_V_GEN)$(MKDIR_P) $(dir $@) && $(wayland_scanner) public-code < $< > $@
+ 
+ protocol/%-server-protocol.h : $(WAYLAND_PROTOCOLS_DATADIR)/$$(call protostability,$$*)/$$(call protoname,$$*)/$$*.xml
+ 	$(AM_V_GEN)$(MKDIR_P) $(dir $@) && $(wayland_scanner) server-header < $< > $@
+@@ -1630,7 +1630,7 @@
+ 	$(AM_V_GEN)$(MKDIR_P) $(dir $@) && $(wayland_scanner) client-header < $< > $@
+ 
+ protocol/%-protocol.c : $(top_srcdir)/protocol/%.xml
+-	$(AM_V_GEN)$(MKDIR_P) $(dir $@) && $(wayland_scanner) code < $< > $@
++	$(AM_V_GEN)$(MKDIR_P) $(dir $@) && $(wayland_scanner) public-code < $< > $@
+ 
+ protocol/%-server-protocol.h : $(top_srcdir)/protocol/%.xml
+ 	$(AM_V_GEN)$(MKDIR_P) $(dir $@) && $(wayland_scanner) server-header < $< > $@

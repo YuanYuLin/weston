@@ -1,0 +1,94 @@
+--- a/configure	2018-04-10 01:21:38.000000000 +0800
++++ b/configure	2018-05-15 05:48:12.296654221 +0800
+@@ -17965,83 +17965,6 @@
+   BUILD_WESTON_LAUNCH_FALSE=
+ fi
+ 
+-if test x$enable_weston_launch = xyes; then
+-
+-	weston_save_LIBS=${LIBS}
+-	{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing pam_open_session" >&5
+-$as_echo_n "checking for library containing pam_open_session... " >&6; }
+-if ${ac_cv_search_pam_open_session+:} false; then :
+-  $as_echo_n "(cached) " >&6
+-else
+-  ac_func_search_save_LIBS=$LIBS
+-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+-/* end confdefs.h.  */
+-
+-/* Override any GCC internal prototype to avoid an error.
+-   Use char because int might match the return type of a GCC
+-   builtin and then its argument prototype would still apply.  */
+-#ifdef __cplusplus
+-extern "C"
+-#endif
+-char pam_open_session ();
+-int
+-main ()
+-{
+-return pam_open_session ();
+-  ;
+-  return 0;
+-}
+-_ACEOF
+-for ac_lib in '' pam; do
+-  if test -z "$ac_lib"; then
+-    ac_res="none required"
+-  else
+-    ac_res=-l$ac_lib
+-    LIBS="-l$ac_lib  $ac_func_search_save_LIBS"
+-  fi
+-  if ac_fn_c_try_link "$LINENO"; then :
+-  ac_cv_search_pam_open_session=$ac_res
+-fi
+-rm -f core conftest.err conftest.$ac_objext \
+-    conftest$ac_exeext
+-  if ${ac_cv_search_pam_open_session+:} false; then :
+-  break
+-fi
+-done
+-if ${ac_cv_search_pam_open_session+:} false; then :
+-
+-else
+-  ac_cv_search_pam_open_session=no
+-fi
+-rm conftest.$ac_ext
+-LIBS=$ac_func_search_save_LIBS
+-fi
+-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_search_pam_open_session" >&5
+-$as_echo "$ac_cv_search_pam_open_session" >&6; }
+-ac_res=$ac_cv_search_pam_open_session
+-if test "$ac_res" != no; then :
+-  test "$ac_res" = "none required" || LIBS="$ac_res $LIBS"
+-  have_pam=yes
+-else
+-  have_pam=no
+-fi
+-
+-	case ${ac_cv_search_pam_open_session} in #(
+-  'none required') :
+-    have_pam=yes ;; #(
+-  no) :
+-     ;; #(
+-  *) :
+-    PAM_LIBS=${ac_cv_search_pam_open_session}
+-	 ;;
+-esac
+-
+-	LIBS=${weston_save_LIBS}
+-
+-  if test x$have_pam = xno; then
+-    as_fn_error $? "weston-launch requires pam" "$LINENO" 5
+-  fi
+-fi
+ 
+  if test "x$have_pango" = "xyes"; then
+   HAVE_PANGO_TRUE=
+@@ -19086,6 +19009,7 @@
+ 
+ fi
+ 	wayland_scanner=`$PKG_CONFIG --variable=wayland_scanner wayland-scanner`
++	wayland_scanner=${WAYLAND_SCANNER_UTIL}
+ fi
+ 
+ # Check whether --enable-systemd_notify was given.

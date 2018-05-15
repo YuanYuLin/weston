@@ -1,0 +1,10 @@
+{
+"COMMON":
+[
+{"enabled":1, "name": "0000-configure.patch"},
+{"enabled":1, "name": "0001-libweston.weston-launch.c.patch"},
+{"enabled":0, "name": "0002-Makefile.in.patch"},
+{"enabled":0, "name": "0003-Makefile.am.patch"},
+{"enabled":0, "name": ""}
+]
+}
