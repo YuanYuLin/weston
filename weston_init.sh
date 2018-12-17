@@ -18,4 +18,4 @@ mkdir -p /tmp/wayland
 chmod 0700 /tmp/wayland
 export XDG_RUNTIME_DIR=/tmp/wayland
 
-/bin/weston-launch
+/usr/local/bin/weston-launch

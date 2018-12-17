@@ -28,6 +28,7 @@ def set_global(args):
     global dst_include_dir
     global dst_lib_dir
     global dst_bin_dir
+    global dst_usr_local_bin_dir
     global dst_usr_local_lib_dir
     global dst_usr_local_libexec_dir
     global dst_usr_local_share_dir
@@ -45,6 +46,7 @@ def set_global(args):
     dst_include_dir = ops.path_join("include",args["pkg_name"])
     dst_bin_dir = ops.path_join(install_dir, "bin")
     dst_lib_dir = ops.path_join(install_dir, "lib")
+    dst_usr_local_bin_dir = ops.path_join(install_dir, "usr/local/bin")
     dst_usr_local_lib_dir = ops.path_join(install_dir, "usr/local/lib")
     dst_usr_local_libexec_dir = ops.path_join(install_dir, "usr/local/libexec")
     dst_usr_local_share_dir = ops.path_join(install_dir, "usr/local/share")
@@ -63,26 +65,6 @@ def MAIN_ENV(args):
     ops.exportEnv(ops.setEnv("DESTDIR", install_tmp_dir))
     #ops.exportEnv(ops.setEnv("PKG_CONFIG_LIBDIR", ops.path_join(iopc.getSdkPath(), "pkgconfig")))
     #ops.exportEnv(ops.setEnv("PKG_CONFIG_SYSROOT_DIR", iopc.getSdkPath()))
-
-    cc_sysroot = ops.getEnv("CC_SYSROOT")
-    cflags = ""
-    cflags += " -I" + ops.path_join(cc_sysroot, 'usr/include')
-    cflags += " -I" + ops.path_join(iopc.getSdkPath(), 'usr/include/libpixman')
-    cflags += " -I" + ops.path_join(iopc.getSdkPath(), 'usr/include/libxkbcommon')
-    cflags += " -I" + ops.path_join(iopc.getSdkPath(), 'usr/include/libudev')
-    cflags += " -I" + ops.path_join(iopc.getSdkPath(), 'usr/include/libdrm')
-    cflags += " -I" + ops.path_join(iopc.getSdkPath(), 'usr/include/libdrm/libdrm')
-    cflags += " -I" + ops.path_join(iopc.getSdkPath(), 'usr/include/mesa')
-    cflags += " -I" + ops.path_join(iopc.getSdkPath(), 'usr/include/libcairo')
-
-    ldflags = ""
-    ldflags += " -L" + ops.path_join(cc_sysroot, 'lib')
-    ldflags += " -L" + ops.path_join(cc_sysroot, 'usr/lib')
-    ldflags += " -L" + ops.path_join(iopc.getSdkPath(), 'lib')
-
-    libs = ""
-    libs += " -lffi -lxml2 -lexpat -lxkbcommon -levdev -ludev -lmtdev -lpixman-1 -lpng -lz -lcairo -ldrm -lgbm -lwayland-server"
-    libs += " -lEGL -ludev -lgbm -ldrm -lexpat -lwayland-client -lglapi -lffi -lwayland-server -lGLESv2"
     #ops.exportEnv(ops.setEnv("LDFLAGS", ldflags))
     #ops.exportEnv(ops.setEnv("CFLAGS", cflags))
     #ops.exportEnv(ops.setEnv("LIBS", libs))
@@ -109,6 +91,9 @@ def MAIN_PATCH(args, patch_group_name):
 
 def MAIN_CONFIGURE(args):
     set_global(args)
+
+    cflags = iopc.get_includes()
+    libs = iopc.get_libs()
 
     extra_conf = []
     extra_conf.append("--host=" + cc_host)
@@ -138,28 +123,6 @@ def MAIN_CONFIGURE(args):
     extra_conf.append("--enable-demo-clients-install")
     #extra_conf.append("--with-host-scanner")
     #extra_conf.append("--disable-documentation")
-    cflags = ""
-    cflags += " -I" + ops.path_join(iopc.getSdkPath(), 'usr/include/libdrm')
-    cflags += " -I" + ops.path_join(iopc.getSdkPath(), 'usr/include/libdrm/libdrm')
-    cflags += " -I" + ops.path_join(iopc.getSdkPath(), 'usr/include/libudev')
-    cflags += " -I" + ops.path_join(iopc.getSdkPath(), 'usr/include/libinput')
-    cflags += " -I" + ops.path_join(iopc.getSdkPath(), 'usr/include/wayland')
-    cflags += " -I" + ops.path_join(iopc.getSdkPath(), 'usr/include/mesa')
-    cflags += " -I" + ops.path_join(iopc.getSdkPath(), 'usr/include/libpixman')
-    cflags += " -I" + ops.path_join(iopc.getSdkPath(), 'usr/include/libpng')
-    cflags += " -I" + ops.path_join(iopc.getSdkPath(), 'usr/include/libcairo')
-    cflags += " -I" + ops.path_join(iopc.getSdkPath(), 'usr/include/libxkbcommon')
-    cflags += " -I" + ops.path_join(iopc.getSdkPath(), 'usr/include/mesa/EGL')
-    cflags += " -I" + ops.path_join(iopc.getSdkPath(), 'usr/include/fontconfig')
-    cflags += " -I" + ops.path_join(iopc.getSdkPath(), 'usr/include/fontconfig/fontconfig')
-    cflags += " -I" + ops.path_join(iopc.getSdkPath(), 'usr/include/freetype')
-    cflags += " -I" + ops.path_join(iopc.getSdkPath(), 'usr/include/freetype/freetype2')
-    cflags += " -DMESA_EGL_NO_X11_HEADERS"
-
-    libs = ""
-    libs += " -L" + ops.path_join(iopc.getSdkPath(), 'lib')
-    libs += " -ldrm -ludev -linput -levdev -lwayland-server -lgbm -lwayland-client -lwayland-cursor -lwayland-egl -lpixman-1 -lffi -lpcre"
-    libs += " -lpng -lcairo -lxkbcommon -lEGL -lfreetype -lfontconfig -lGLESv2 -lOSMesa -lexpat -lxml2 -ludev -lmtdev -lz -lglapi -luuid -lglib-2.0"
     extra_conf.append('LIBDRM_CFLAGS=' + cflags)
     extra_conf.append('LIBDRM_LIBS=' + libs)
     extra_conf.append('DRM_COMPOSITOR_CFLAGS=' + cflags)
@@ -190,7 +153,7 @@ def MAIN_CONFIGURE(args):
     extra_conf.append('WESTON_INFO_LIBS=' + libs)
     extra_conf.append('XKBCOMMON_COMPOSE_CFLAGS=' + cflags)
     extra_conf.append('XKBCOMMON_COMPOSE_LIBS=' + libs)
-    extra_conf.append('EGL_CFLAGS=' + cflags)
+    extra_conf.append('EGL_CFLAGS=' + cflags) 
     extra_conf.append('EGL_LIBS=' + libs)
     extra_conf.append('EGL_TESTS_CFLAGS=' + cflags)
     extra_conf.append('EGL_TESTS_LIBS=' + libs)
@@ -215,35 +178,36 @@ def MAIN_BUILD(args):
     ops.mkdir(install_dir)
     ops.mkdir(dst_lib_dir)
     ops.mkdir(dst_bin_dir)
+    ops.mkdir(dst_usr_local_bin_dir)
     ops.mkdir(dst_usr_local_lib_dir)
     ops.mkdir(dst_usr_local_libexec_dir)
     ops.mkdir(dst_usr_local_share_dir)
     ops.mkdir(dst_pkgconfig_dir)
 
 
-    ops.copyto(ops.path_join(install_tmp_dir, "usr/local/bin/weston"), dst_bin_dir)
-    ops.copyto(ops.path_join(install_tmp_dir, "usr/local/bin/weston-launch"), dst_bin_dir)
-    ops.copyto(ops.path_join(install_tmp_dir, "usr/local/bin/weston-terminal"), dst_bin_dir)
-    ops.copyto(ops.path_join(install_tmp_dir, "usr/local/bin/weston-info"), dst_bin_dir)
+    ops.copyto(ops.path_join(install_tmp_dir, "usr/local/bin/weston"), dst_usr_local_bin_dir)
+    ops.copyto(ops.path_join(install_tmp_dir, "usr/local/bin/weston-launch"), dst_usr_local_bin_dir)
+    ops.copyto(ops.path_join(install_tmp_dir, "usr/local/bin/weston-terminal"), dst_usr_local_bin_dir)
+    ops.copyto(ops.path_join(install_tmp_dir, "usr/local/bin/weston-info"), dst_usr_local_bin_dir)
     ops.copyto(ops.path_join(output_dir, "weston_init.sh"), dst_bin_dir)
 
     if install_test_utils :
-        ops.copyto(ops.path_join(install_tmp_dir, "usr/local/bin/weston-calibrator"), dst_bin_dir)
-        ops.copyto(ops.path_join(install_tmp_dir, "usr/local/bin/weston-clickdot"), dst_bin_dir)
-        ops.copyto(ops.path_join(install_tmp_dir, "usr/local/bin/weston-cliptest"), dst_bin_dir)
-        ops.copyto(ops.path_join(install_tmp_dir, "usr/local/bin/weston-confine"), dst_bin_dir)
-        ops.copyto(ops.path_join(install_tmp_dir, "usr/local/bin/weston-dnd"), dst_bin_dir)
-        ops.copyto(ops.path_join(install_tmp_dir, "usr/local/bin/weston-eventdemo"), dst_bin_dir)
-        ops.copyto(ops.path_join(install_tmp_dir, "usr/local/bin/weston-flower"), dst_bin_dir)
-        ops.copyto(ops.path_join(install_tmp_dir, "usr/local/bin/weston-fullscreen"), dst_bin_dir)
-        ops.copyto(ops.path_join(install_tmp_dir, "usr/local/bin/weston-image"), dst_bin_dir)
-        ops.copyto(ops.path_join(install_tmp_dir, "usr/local/bin/weston-resizor"), dst_bin_dir)
-        ops.copyto(ops.path_join(install_tmp_dir, "usr/local/bin/weston-scaler"), dst_bin_dir)
-        ops.copyto(ops.path_join(install_tmp_dir, "usr/local/bin/weston-simple-egl"), dst_bin_dir)
-        ops.copyto(ops.path_join(install_tmp_dir, "usr/local/bin/weston-smoke"), dst_bin_dir)
-        ops.copyto(ops.path_join(install_tmp_dir, "usr/local/bin/weston-stacking"), dst_bin_dir)
-        ops.copyto(ops.path_join(install_tmp_dir, "usr/local/bin/weston-subsurfaces"), dst_bin_dir)
-        ops.copyto(ops.path_join(install_tmp_dir, "usr/local/bin/weston-transformed"), dst_bin_dir)
+        ops.copyto(ops.path_join(install_tmp_dir, "usr/local/bin/weston-calibrator"), dst_usr_local_bin_dir)
+        ops.copyto(ops.path_join(install_tmp_dir, "usr/local/bin/weston-clickdot"), dst_usr_local_bin_dir)
+        ops.copyto(ops.path_join(install_tmp_dir, "usr/local/bin/weston-cliptest"), dst_usr_local_bin_dir)
+        ops.copyto(ops.path_join(install_tmp_dir, "usr/local/bin/weston-confine"), dst_usr_local_bin_dir)
+        ops.copyto(ops.path_join(install_tmp_dir, "usr/local/bin/weston-dnd"), dst_usr_local_bin_dir)
+        ops.copyto(ops.path_join(install_tmp_dir, "usr/local/bin/weston-eventdemo"), dst_usr_local_bin_dir)
+        ops.copyto(ops.path_join(install_tmp_dir, "usr/local/bin/weston-flower"), dst_usr_local_bin_dir)
+        ops.copyto(ops.path_join(install_tmp_dir, "usr/local/bin/weston-fullscreen"), dst_usr_local_bin_dir)
+        ops.copyto(ops.path_join(install_tmp_dir, "usr/local/bin/weston-image"), dst_usr_local_bin_dir)
+        ops.copyto(ops.path_join(install_tmp_dir, "usr/local/bin/weston-resizor"), dst_usr_local_bin_dir)
+        ops.copyto(ops.path_join(install_tmp_dir, "usr/local/bin/weston-scaler"), dst_usr_local_bin_dir)
+        ops.copyto(ops.path_join(install_tmp_dir, "usr/local/bin/weston-simple-egl"), dst_usr_local_bin_dir)
+        ops.copyto(ops.path_join(install_tmp_dir, "usr/local/bin/weston-smoke"), dst_usr_local_bin_dir)
+        ops.copyto(ops.path_join(install_tmp_dir, "usr/local/bin/weston-stacking"), dst_usr_local_bin_dir)
+        ops.copyto(ops.path_join(install_tmp_dir, "usr/local/bin/weston-subsurfaces"), dst_usr_local_bin_dir)
+        ops.copyto(ops.path_join(install_tmp_dir, "usr/local/bin/weston-transformed"), dst_usr_local_bin_dir)
 
     libweston = "libweston-4.so.0.0.0"
     ops.copyto(ops.path_join(install_tmp_dir, "usr/local/lib/" + libweston), dst_lib_dir)
@@ -277,18 +241,32 @@ def MAIN_BUILD(args):
 
     ops.mkdir(tmp_include_dir)
     ops.copyto(ops.path_join(install_tmp_dir, "usr/local/include/."), tmp_include_dir)
-    return False
+    return True
 
 def MAIN_INSTALL(args):
     set_global(args)
 
     iopc.installBin(args["pkg_name"], ops.path_join(ops.path_join(install_dir, "bin"), "."), "bin")
     iopc.installBin(args["pkg_name"], ops.path_join(ops.path_join(install_dir, "lib"), "."), "lib")
+    iopc.installBin(args["pkg_name"], ops.path_join(dst_usr_local_bin_dir, "."), "usr/local/bin")
     iopc.installBin(args["pkg_name"], ops.path_join(dst_usr_local_share_dir, "."), "usr/local/share")
     iopc.installBin(args["pkg_name"], ops.path_join(dst_usr_local_lib_dir, "."), "usr/local/lib")
     iopc.installBin(args["pkg_name"], ops.path_join(dst_usr_local_libexec_dir, "."), "usr/local/libexec")
     iopc.installBin(args["pkg_name"], ops.path_join(tmp_include_dir, "."), dst_include_dir)
     iopc.installBin(args["pkg_name"], ops.path_join(dst_pkgconfig_dir, '.'), "pkgconfig")
+
+    return False
+
+def MAIN_SDKENV(args):
+    set_global(args)
+
+    cflags = ""
+    cflags += " -I" + ops.path_join(iopc.getSdkPath(), 'usr/include/' + args["pkg_name"])
+    iopc.add_includes(cflags)
+
+    libs = ""
+    libs += " -lweston-4 -lweston-desktop-4"
+    iopc.add_libs(libs)
 
     return False
 
